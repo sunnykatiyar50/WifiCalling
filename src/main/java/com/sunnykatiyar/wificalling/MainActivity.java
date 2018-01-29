@@ -1,10 +1,8 @@
 package com.sunnykatiyar.wificalling;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
+import android.app.FragmentManager;
 import android.content.Context;
-import android.content.Intent;
-import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -15,28 +13,34 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     public static WifiManager wifimgr;
     public static WifiInfo wifiInfo;
     public static WifiConfiguration wificfg;
-    public List<WifiConfiguration> availabledevices = new ArrayList<>();
-    public List<ScanResult> paired_devices = new ArrayList<ScanResult>();
-    public List<ScanResult> connected_devices = new ArrayList<ScanResult>();
+    public static List<WifiConfiguration> available_devices = new ArrayList<>();
+    public static List<InetAddress> connected_devices = new ArrayList<>();
     public static Context context;
     public static Activity activity;
+    public static int myDefaultPort = 44447;
+    public static String myStringIpAddress;
+    public static int myIntIpAddress;
+    public static DeviceListFragment deviceListFragment ;
+    public static AboutFragment aboutFragment = new AboutFragment();
+    public static SettingsFragment settingsFragment = new SettingsFragment();
+    public static FragmentManager fragmentManager;
+    public static boolean isDeviceConnected;
+    public static int client_nmbr =0;
+    public static List<ClientObject> remote_clients = new ArrayList<ClientObject>();
+    public static ClientThread[] remote_client_thread = new ClientThread[30];
+    public static boolean isServerRunning=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,36 +60,18 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         context = this.getApplicationContext();
-        wifimgr = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-
-        TextView conn_status_textview = findViewById(R.id.phone_conn_status);
-        String network_name="";
-
-        if (wifimgr.isWifiEnabled()) {
-            wifiInfo = wifimgr.getConnectionInfo();
-            network_name = wifiInfo.getSSID();
-            availabledevices = wifimgr.getConfiguredNetworks();
-            Log.i(TAG," got configured networks ");
-
-            if (network_name.equals("<unknown ssid>")) {
-                conn_status_textview.setText("Please connect to a Network");
-
-                Toast.makeText(context,availabledevices.size() + " neyworks available",Toast.LENGTH_SHORT).show();
-            //Toast.makeText(context,availabledevices.get(1).SSID,Toast.LENGTH_LONG);
-            } else
-                conn_status_textview.setText("You are Connected to " + network_name);
-        }
-    else   conn_status_textview.setText("Please Enable Wifi And Connect to a Network")  ;
+        fragmentManager = getFragmentManager();
+        refreshlist();
 
 
-        ListView devices_listview = findViewById(R.id.device_listview);
-        Log.i(TAG," before setadapter  ");
-        DeviceListAdapter deviceListAdapter = new DeviceListAdapter(availabledevices,context,activity);
-        devices_listview.setAdapter(deviceListAdapter);
-        Log.i(TAG," after set adapter  ");
+    }
 
+    protected void refreshlist(){
+        deviceListFragment =  new DeviceListFragment();
+        fragmentManager.beginTransaction()
+                        .add(R.id.user_details_container, deviceListFragment)
+                        .commit();
     }
 
     @Override
@@ -100,7 +86,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+     // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -112,9 +98,11 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            fragmentManager.beginTransaction().replace(R.id.user_details_container,new SettingsFragment()).commit();
+        }else  if (id == R.id.action_refresh){
+                refreshlist();
         }
 
         return super.onOptionsItemSelected(item);
@@ -124,22 +112,22 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        Intent i ;
-        if (id == R.id.devices_menuitem) {
-            i= new Intent(this, MainActivity.class) ;
-            startActivity(i);
-        } else if (id == R.id.history_menuitem) {
-                i = new Intent(this,CallHistory.class);
-                startActivity(i);
-        } else if (id == R.id.settings_menuitem) {
-            i = new Intent(this,Settings.class);
-            startActivity(i);
-        } else if (id == R.id.about_menuitem) {
-            i = new Intent(this,About.class);
-            startActivity(i);
-        } else if (id == R.id.exit_menuitem) {
 
+        int id = item.getItemId();
+
+        if (id == R.id.devices_menuitem) {
+            fragmentManager.beginTransaction().replace(R.id.user_details_container, new DeviceListFragment()).commit();
+        } else if (id == R.id.history_menuitem) {
+            fragmentManager.beginTransaction().replace(R.id.user_details_container,new CallHistoryFragment()).commit();
+        } else if (id == R.id.settings_menuitem) {
+            fragmentManager.beginTransaction().replace(R.id.user_details_container,settingsFragment).commit();
+        } else if (id == R.id.about_menuitem) {
+            fragmentManager.beginTransaction().replace(R.id.user_details_container,aboutFragment).commit();
+        } else if (id == R.id.myprofile_menuitem) {
+            fragmentManager.beginTransaction().replace(R.id.user_details_container, new MyProfileFragment()).commit();
+        }   else if (id == R.id.exit_menuitem) {
+                            this.finishActivity(0);
+                            System.exit(0);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
