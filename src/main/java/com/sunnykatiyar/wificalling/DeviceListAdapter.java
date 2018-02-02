@@ -2,6 +2,7 @@ package com.sunnykatiyar.wificalling;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +19,14 @@ import java.util.List;
 
 public class DeviceListAdapter extends BaseAdapter {
 
-    List<ClientObject> user_list = new ArrayList<>();
+    List<ClientObject> remote_clients = new ArrayList<>();
     Context context ;
     Activity activity;
+    public ClientObject clientObject;
     final String TAG = "Device List Adapter";
 
     public DeviceListAdapter(List<ClientObject> connected_devices, Context c, Activity a){
-        this.user_list= connected_devices;
+        this.remote_clients = connected_devices;
         this.context = c;
         this.activity=a;
     }
@@ -54,20 +56,20 @@ public class DeviceListAdapter extends BaseAdapter {
             viewHolder.message_user=view.findViewById(R.id.btn_message);
             viewHolder.call_user=view.findViewById(R.id.btn_call);
 
-            ClientObject clientObject2 = user_list.get(position);
-            clientObject2.position=position;
-            viewHolder.device_name.setText(clientObject2.getRemoteInetAddress().toString());
-            viewHolder.ip_address.setText(clientObject2.getRemoteIp());
+            this.clientObject = remote_clients.get(position);
+            this.clientObject.position=position;
+            viewHolder.device_name.setText(clientObject.getRemoteInetAddress().toString());
+            viewHolder.ip_address.setText(clientObject.getRemoteIp());
             view.setTag(viewHolder);
          }
-        else {   viewHolder = (ViewHolder) view.getTag();          }
+        else viewHolder = (ViewHolder) view.getTag();
 
         viewHolder.message_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                        MainActivity.fragmentManager.beginTransaction()
-                                .replace(R.id.user_details_container,new MessagingFragment(user_list.get(position)))
-                                .commit();
+                  //  Log.e(TAG,"remote_clients size :"+remote_clients.size());
+                    Log.e(TAG,"clicked on :"+clientObject.remote_ip);
+                    clientObject.clientThread.openFragment();
             }
         });
 
@@ -81,16 +83,12 @@ public class DeviceListAdapter extends BaseAdapter {
             }
         });
 
-
         return view;
-
-
-
     }
 
     @Override
     public int getCount() {
-        return user_list.size();
+        return remote_clients.size();
     }
 
     @Override
@@ -104,15 +102,3 @@ public class DeviceListAdapter extends BaseAdapter {
     }
 
 }
-
-/*
-class GetInfo extends AsyncTask<InetAddress, Void, Void> {
-
-    @Override
-    protected Void doInBackground(InetAddress... voids) {
-
-
-
-        return null;
-    }
-}*/

@@ -4,6 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sunnykatiyar.wificalling.Settings">
+    android:background="@color/darkgrey"
+    tools:context="com.sunnykatiyar.wificalling.SettingsFragment">
+
+    <TextView
+        android:text="This is Settings Fragment"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </android.support.constraint.ConstraintLayout>

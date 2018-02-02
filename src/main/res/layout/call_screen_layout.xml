@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <ImageView
+        android:id="@+id/user_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:scaleX="7"
+        android:scaleY="9"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="149dp"
+        app:srcCompat="@mipmap/ic_launcher_round" />
+
+    <TextView
+        android:id="@+id/caller_ip_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:padding="@dimen/size_medium"
+        android:textStyle="bold"
+        android:textColor="@color/aqua"
+        android:textSize="@dimen/text_large"
+        android:text="User IP Address" />
+
+    <TextView
+        android:id="@+id/caller_name_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_medium"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/caller_ip_textview"
+        android:padding="@dimen/size_medium"
+        android:text="User Name" />
+
+    <TextView
+        android:id="@+id/call_duration_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="13dp"
+        android:textStyle="bold"
+        android:textSize="@dimen/text_medium"
+        android:paddingBottom="@dimen/size_small"
+        android:text="Call Status" />
+
+    <Button
+        android:id="@+id/hangup_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/size_medium"
+        android:text="Hang Up" />
+
+    <ToggleButton
+        android:id="@+id/speaker_toggle_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="@dimen/size_medium"
+        android:text="Speaker" />
+
+
+</RelativeLayout>

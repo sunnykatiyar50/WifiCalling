@@ -4,7 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sunnykatiyar.wificalling.CallHistory">
+    android:background="@color/darkgrey"
+    tools:context="com.sunnykatiyar.wificalling.CallHistoryFragment">
+
+    <TextView
+        android:text="Call History Will Be Shown Here"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:textSize="@dimen/text_large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <ListView
         android:layout_width="wrap_content"

@@ -36,10 +36,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static AboutFragment aboutFragment = new AboutFragment();
     public static SettingsFragment settingsFragment = new SettingsFragment();
     public static FragmentManager fragmentManager;
-    public static boolean isDeviceConnected;
-    public static int client_nmbr =0;
-    public static List<ClientObject> remote_clients = new ArrayList<ClientObject>();
-    public static ClientThread[] remote_client_thread = new ClientThread[30];
+    public static List<ClientObject> remote_clients;
+    public static ClientThread[] remote_client_thread;
     public static boolean isServerRunning=false;
 
     @Override

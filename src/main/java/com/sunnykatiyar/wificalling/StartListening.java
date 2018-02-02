@@ -1,13 +1,7 @@
 package com.sunnykatiyar.wificalling;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,6 +18,8 @@ class StartListening extends Thread{
     String TAG = "StartListening " ;
     List<ServerObject> serverObjects_list = new ArrayList<>();
     Socket new_client;
+    Boolean stop_server=true;
+    ServerObject new_serverObject;
 
 
     @Override
@@ -32,12 +28,13 @@ class StartListening extends Thread{
         connectToClients();
     }
 
-    void startServer()
-    { try { if(myServer==null)
-    {   myServer = new ServerSocket(MainActivity.myDefaultPort);
-        MainActivity.isServerRunning=true;
-        Log.e(TAG,"Server Started Successfully ....");
-    }
+    void startServer() {
+    try {
+            if(myServer==null)
+                {   myServer = new ServerSocket(MainActivity.myDefaultPort);
+                    MainActivity.isServerRunning=true;
+                    Log.e(TAG,"Server Started Successfully ....");
+                }
     } catch (IOException e) {
         Log.e(TAG,"Error Starting server ....");
     }
@@ -46,16 +43,17 @@ class StartListening extends Thread{
 
 
     protected void connectToClients() {
-        client_nmbr = 0 ;
-        while (true) {
+        client_nmbr = 1 ;
+        while (stop_server==false) {
             try {
-                    new_client = myServer.accept();
-                    serverObjects_list.add(new ServerObject(myServer,new_client,client_nmbr));
-                    new ServerThread(serverObjects_list.get(client_nmbr));
-                    Log.e(TAG,"client no. "+client_nmbr+" created");
+                   new_client = myServer.accept();
+                   new_serverObject = new ServerObject(myServer,new_client,client_nmbr);
+                   new ServerThread(new_serverObject).start();
+                   serverObjects_list.add(new_serverObject);
+                    Log.e(TAG,"client no. "+client_nmbr+" created ");
                     client_nmbr++;
                  } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e(TAG,"Unable to accept client requests. ");
                 }
 
             }

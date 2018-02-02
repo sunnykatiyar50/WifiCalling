@@ -4,6 +4,11 @@
     tools:showIn="navigation_view">
 
     <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/myprofile_menuitem"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="My Profile" />
         <item
             android:id="@+id/devices_menuitem"
             android:icon="@drawable/ic_phone_android_black_24dp"
@@ -24,6 +29,7 @@
             android:id="@+id/exit_menuitem"
             android:icon="@drawable/ic_exit_to_app_black_24dp"
             android:title="Exit" />
+
     </group>
 
 </menu>
