@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/darkgrey"
     tools:context="com.sunnykatiyar.wificalling.CallHistoryFragment">
 
     <TextView
-        android:text="Call History Will Be Shown Here"
-        android:textColor="@color/white"
+        android:text="Call History Fragment \n Feature will arrive soon"
+        android:textColor="@color/black"
         android:textAlignment="center"
-        android:textSize="@dimen/text_large"
+        android:layout_centerVertical="true"
+        android:textSize="@dimen/text_medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
     <ListView
         android:layout_width="wrap_content"
+        android:visibility="invisible"
         android:layout_height="wrap_content"
         android:id="@+id/callhistory_listview"   />
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

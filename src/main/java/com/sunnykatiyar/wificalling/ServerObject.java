@@ -1,5 +1,6 @@
 package com.sunnykatiyar.wificalling;
 
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -24,10 +25,13 @@ public class ServerObject extends Socket {
     int client_nmbr;
     String local_ip;
     String new_msg;
-   // BufferedReader bufferedReader;
-   // BufferedWriter bufferedWriter;
     String TAG = "ServerObject";
     InetAddress client_inetaddress;
+    ServerThread serverThread;
+
+
+    // BufferedReader bufferedReader;
+   // BufferedWriter bufferedWriter;
    // Boolean first_msg=true;
    // MessagingFragment receive_msg_fragment;
    // ArrayList<String> messages = new ArrayList<>();
@@ -37,10 +41,15 @@ public class ServerObject extends Socket {
         this.client_nmbr=client_nmbr;
         this.remote_client=new_client;
         this.remote_ip=new_client.getInetAddress().getHostName();
-        Log.e(TAG,"client_ip = "+this.remote_ip);
         this.local_ip=myServer.getInetAddress().getHostName();
-        Log.e(TAG,"local_ip = "+this.local_ip);
         this.client_inetaddress = new_client.getInetAddress();
+        Log.e(TAG,"Server Object created at "+this.local_ip);
+        startThread();
+    }
+
+    public void startThread(){
+        serverThread =new ServerThread(this);
+        serverThread.start();
     }
 
 }

@@ -19,14 +19,14 @@ import java.util.List;
 
 public class DeviceListAdapter extends BaseAdapter {
 
-    List<ClientObject> remote_clients = new ArrayList<>();
+    List<ClientObject> r_clients = new ArrayList<>();
     Context context ;
     Activity activity;
     public ClientObject clientObject;
     final String TAG = "Device List Adapter";
 
     public DeviceListAdapter(List<ClientObject> connected_devices, Context c, Activity a){
-        this.remote_clients = connected_devices;
+        this.r_clients = connected_devices;
         this.context = c;
         this.activity=a;
     }
@@ -56,8 +56,7 @@ public class DeviceListAdapter extends BaseAdapter {
             viewHolder.message_user=view.findViewById(R.id.btn_message);
             viewHolder.call_user=view.findViewById(R.id.btn_call);
 
-            this.clientObject = remote_clients.get(position);
-            this.clientObject.position=position;
+            this.clientObject = r_clients.get(position);
             viewHolder.device_name.setText(clientObject.getRemoteInetAddress().toString());
             viewHolder.ip_address.setText(clientObject.getRemoteIp());
             view.setTag(viewHolder);
@@ -67,9 +66,10 @@ public class DeviceListAdapter extends BaseAdapter {
         viewHolder.message_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                  //  Log.e(TAG,"remote_clients size :"+remote_clients.size());
+                  //Log.e(TAG,"remote_clients size :"+remote_clients.size());
                     Log.e(TAG,"clicked on :"+clientObject.remote_ip);
-                    clientObject.clientThread.openFragment();
+                    clientObject.client_nmbr=position;
+                    clientObject.openFragment();
             }
         });
 
@@ -88,7 +88,9 @@ public class DeviceListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return remote_clients.size();
+        if (r_clients!=null)
+            return r_clients.size();
+                    else return 0;
     }
 
     @Override

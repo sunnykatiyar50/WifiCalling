@@ -3,24 +3,25 @@ package com.sunnykatiyar.wificalling;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Message;
-import android.os.StrictMode;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.text.Format;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import static com.sunnykatiyar.wificalling.MainActivity.remote_client_thread;
 import static com.sunnykatiyar.wificalling.MainActivity.context;
-import static com.sunnykatiyar.wificalling.MainActivity.remote_clients;
 
 /**
  * Created by Sunny Katiyar on 28-01-2018.
@@ -28,51 +29,66 @@ import static com.sunnykatiyar.wificalling.MainActivity.remote_clients;
 
 public class MessagingFragment extends Fragment {
 
+    String TAG = "Msg Fragment : ";
     ClientObject selected_client;
     ClientThread clientThread;
-    int thread_num;
-    String TAG = "Msg Fragment : ";
-    List<String> messages;
-    public static ArrayAdapter<String> msg_adapter;
+    ServerThread serverThread;
+    int client_nmbr;
+    Handler handler;
+    public static MessageAdapter msg_adapter;
+    public List<String> all_messages;
+
+    ListView msg_listview;
+    EditText editText;
+    String msg;
+    final int SEND_NEW_MESSAGE=1;
+    Message message;
     public MessagingFragment() {
         super();
     }
 
     @SuppressLint("ValidFragment")
-    public MessagingFragment(List Msgs,ClientThread c) {
-        //      thread_num=c;
-        this.messages=Msgs;
-        this.clientThread =c;
+    public MessagingFragment(ClientObject c,int i) {
+        this.selected_client=c;
+        this.client_nmbr=i;
+        all_messages=new ArrayList<>();
+        Log.e(TAG,"clientobject local ip is :"+selected_client.local_ip);
+   }
+/*
+    @SuppressLint("ValidFragment")
+    public MessagingFragment(ServerThread s) {
+        this.serverThread=new ServerThread(s.selected_server);
+       // this.messages=new ArrayList<>();
+        //messages.removeAll(messages);
         this.selected_client = remote_clients.get(thread_num);
         Log.e(TAG,"clientobject local ip is :"+selected_client.local_ip);
     }
-
-
-
+*/
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.chat_layout, container, false);
-        final EditText editText = view.findViewById(R.id.msg_edittext);
 
         Button cancel_button = view.findViewById(R.id.cancel_btn);
         Button send_button = view.findViewById(R.id.send_btn);
         Button clear_button = view.findViewById(R.id.clear_btn);
-        ListView msg_list = view.findViewById(R.id.msg_list_listview);
+        editText = view.findViewById(R.id.msg_edittext);
+        msg_listview = view.findViewById(R.id.msg_list_listview);
 
-//        remote_client_thread[selected_client.position] = new ClientThread(selected_client);
-//        remote_client_thread[selected_client.position].start();
+        clientThread=new ClientThread(selected_client,client_nmbr,this);
+        clientThread.start();
+        msg_adapter = new MessageAdapter(all_messages);
+        msg_listview.setAdapter(msg_adapter);
 
-
-        clientThread = DeviceListFragment.clientThreads[thread_num];
-//        clientThread = new ClientThread(selected_client);
-  //      clientThread.start();
-        msg_adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, android.R.id.text1,this.messages);
-        msg_list.setAdapter(msg_adapter);
-        msg_adapter.setNotifyOnChange(true);
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                //super.handleMessage(msg);
+                msg_adapter.notifyDataSetChanged();
+                Log.e(TAG, "in Handler");
+            }
+        };
 
         clear_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,16 +100,13 @@ public class MessagingFragment extends Fragment {
         send_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG,"onclick :");
-/*
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        clientThread.sendMsg(editText.getText().toString(),msg_adapter);
-                    }
-                });
-  */            clientThread.sendMsg(editText.getText().toString());
-                msg_adapter.setNotifyOnChange(true);
+                Log.e(TAG, "onclick :");
+                msg=editText.getText().toString();
+                all_messages.add("You : "+msg+"/t");
+                msg_adapter.notifyDataSetChanged();
+                message = new Message();
+                message.obj=""+msg;
+                clientThread.myClientThreadHandler.sendMessage(message);
                 editText.setText("");
             }
         });
@@ -104,9 +117,12 @@ public class MessagingFragment extends Fragment {
                 MainActivity.fragmentManager.popBackStackImmediate();
             }
         });
-
         return view;
     }
-
-
+/*
+    public void startThread(){
+        this.clientThread.start();
+        Log.i(TAG,"Thread started for client "+client_nmbr);
+    }
+*/
 }

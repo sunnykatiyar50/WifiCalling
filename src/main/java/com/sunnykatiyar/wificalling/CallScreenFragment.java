@@ -11,7 +11,6 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.annotation.Nullable;
-import android.text.format.Formatter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import static android.content.Context.WIFI_SERVICE;
 import static com.sunnykatiyar.wificalling.MainActivity.context;
 
 /**
@@ -81,7 +79,7 @@ public class CallScreenFragment extends Fragment {
 
             try {
                 // get the string ip
-                WifiManager wm = MainActivity.wifimgr;
+                WifiManager wm = DeviceListFragment.wifimgr;
                 String ip = MyProfileFragment.intToStringIp(wm.getConnectionInfo().getIpAddress());
 
                 // convert to bytes
